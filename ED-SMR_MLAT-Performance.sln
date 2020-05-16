@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ED-SMR_MLAT-Performance", "ED-SMR_MLAT-Performance\ED-SMR_MLAT-Performance.csproj", "{C85139D4-D7E6-4871-86F9-9825005F6776}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codigo", "Codigo\Codigo.csproj", "{6A4DDD06-C28B-4603-A253-25E4303BB438}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ED-MLAT Performance Avaluator", "ED-MLAT Performance Avaluator\ED-MLAT Performance Avaluator.vdproj", "{3DB30BFD-A800-460E-A9EC-B633BAB915D7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C85139D4-D7E6-4871-86F9-9825005F6776}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C85139D4-D7E6-4871-86F9-9825005F6776}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C85139D4-D7E6-4871-86F9-9825005F6776}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C85139D4-D7E6-4871-86F9-9825005F6776}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A4DDD06-C28B-4603-A253-25E4303BB438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A4DDD06-C28B-4603-A253-25E4303BB438}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A4DDD06-C28B-4603-A253-25E4303BB438}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A4DDD06-C28B-4603-A253-25E4303BB438}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DB30BFD-A800-460E-A9EC-B633BAB915D7}.Debug|Any CPU.ActiveCfg = Debug
+		{3DB30BFD-A800-460E-A9EC-B633BAB915D7}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1DB513B2-8DED-4D32-84EE-D1827A339B2D}
+	EndGlobalSection
+EndGlobal
