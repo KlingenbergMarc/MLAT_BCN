@@ -1,0 +1,2 @@
+# MLAT_BCN
+Welcome to ED-MLAT Performance Evaluator. This application calculates the value of the different parameters listed in the document of EUROCAE “MOPS for Mode S MLAT Systems” (ED-117) using .ast files of opportunity traffic from LEBL, and determines if the MLAT meets these minimum requirements. It also allows analyzing D-GPS recordings to calculate position accuracy data; and it provides an interface that allows you to\ndiscard certain vehicles from the analysis.
