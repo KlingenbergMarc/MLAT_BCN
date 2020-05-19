@@ -1,0 +1,15 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install dependencies
+      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends mono-complete nuget
+    - name: restore dependencies
+      run: nuget restore -SolutionDirectory ./
+    - name: build
+      run: msbuild ./ED-SMR_MLAT-Performance.sln
