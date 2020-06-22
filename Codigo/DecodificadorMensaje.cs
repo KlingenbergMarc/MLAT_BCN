@@ -1570,14 +1570,30 @@ namespace Codigo
             {
                 entradasTime[2] = entradasTime[3];
             }
-            double a = Convert.ToDouble(entradasTime[2]);
-            this.UTC = (Convert.ToDouble(entradasTime[0]) * 60) + Convert.ToDouble(entradasTime[1]) + (Convert.ToDouble(entradasTime[2]) / (60 * 100));//Pasamos a minutos y decimas de minuto
+            
+            string[] components = entradasTime[2].Split('.',','); //Separamos los segundos.decimas a segundos y decimas por separado (el fichero de entrada puede usar coma o punto)
+            double segundos = Convert.ToDouble(components[0]);
+            double decimas = Convert.ToDouble(components[1]) / (Math.Pow(10, (components[1].Length))*60); //dividimos las decimas entre 10^(numero de decimas) y lo pasamos a decimas de minuto
+            this.UTC = (Convert.ToDouble(entradasTime[0]) * 60) + Convert.ToDouble(entradasTime[1]) + (segundos / 60)+decimas;//Pasamos a minutos y decimas de minuto
+
             string[] Mlat = new string[] { "411749426N", "0020442410E" };//Coordenadas del mlat
             double[] cartMlat = new double[2];
             double[] posicion = new double[2];
+
             cartMlat[0] = ConvertWGStoRad(Mlat[0], 0);//Mlat en radianes
             cartMlat[1] = ConvertWGStoRad(Mlat[1], 1);
-            posicion = ConvertRadtoXY(cartMlat, Convert.ToDouble(entradas[1]) * Math.PI / (180 * Math.Pow(10, 10)), Convert.ToDouble(entradas[2]) * Math.PI / (180 * Math.Pow(10, 10)));// /Math.Pow(10, 10) porque no transforma bien el . decimal
+
+            string[] componentes1 = entradas[1].Split('.'); //Separamos la posición entre el entero y las decimas
+            string[] componentes2 = entradas[2].Split('.'); //Separamos la posición entre el entero y las decimas
+
+            double entero1 = Convert.ToDouble(componentes1[0]);
+            double decimales1 = Convert.ToDouble(componentes1[1]) / (Math.Pow(10, (componentes1[1].Length))); //dividimos las decimas entre 10^(numero de decimas)
+
+            double entero2 = Convert.ToDouble(componentes2[0]);
+            double decimales2 = Convert.ToDouble(componentes2[1]) / (Math.Pow(10, (componentes2[1].Length))); //dividimos las decimas entre 10^(numero de decimas)
+
+            posicion = ConvertRadtoXY(cartMlat, (entero1+decimales1) * Math.PI / 180, (entero2 + decimales2) * Math.PI / 180 );// 
+
             this.cartX = posicion[0];//Pasamos WGS a XY
             this.cartY = posicion[1];
         }
