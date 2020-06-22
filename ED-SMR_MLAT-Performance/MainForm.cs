@@ -41,6 +41,9 @@ namespace ED_SMR_MLAT_Performance
         double proporcionDescartados; //Cambia la proporcion del mapa de descartados en caso de que clique "View Whole"
         //bool seccionInicializada = true; //Regula el evento clic sobre panelMap, inicia y finaliza la creación de una sección
         //List<double[]> puntosSecciones = new List<double[]>();
+        double Proporcion = 5; //Proporcion del mapa que se enseña
+        double OffsetX = 10000; //Offset del origen de coordenadas del mapa (es igual al origen de coordenadas de la MLAT)
+        double OffsetY = 7000;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -212,9 +215,9 @@ namespace ED_SMR_MLAT_Performance
             }
             else if (zoom)
             {
-                dimensiones[0, 0] = dimensiones[0, 0] - 10000;
-                dimensiones[1, 0] = dimensiones[1, 0] - 7000;
-                proporcion= myLmap.GetPROPORCION(height / 5, width / 5);
+                dimensiones[0, 0] = dimensiones[0, 0] - OffsetX;
+                dimensiones[1, 0] = dimensiones[1, 0] - OffsetY;
+                proporcion= myLmap.GetPROPORCION(height /Proporcion, width / Proporcion);
             }
             else
             {
@@ -291,9 +294,9 @@ namespace ED_SMR_MLAT_Performance
 
             if (zoom)
             {
-                dimensiones[0, 0] = dimensiones[0, 0] - 10000;
-                dimensiones[1, 0] = dimensiones[1, 0] - 7000;
-                proporcion = myLmap.GetPROPORCION(height / 5, width / 5);
+                dimensiones[0, 0] = dimensiones[0, 0] - OffsetX;
+                dimensiones[1, 0] = dimensiones[1, 0] - OffsetY;
+                proporcion = myLmap.GetPROPORCION(height / Proporcion, width / Proporcion);
             }
             else
             {
@@ -359,9 +362,9 @@ namespace ED_SMR_MLAT_Performance
 
             if (zoom)
             {
-                dimensiones[0, 0] = dimensiones[0, 0] - 10000;
-                dimensiones[1, 0] = dimensiones[1, 0] - 7000;
-                proporcion = myLmap.GetPROPORCION(height / 5, width / 5);
+                dimensiones[0, 0] = dimensiones[0, 0] - OffsetX;
+                dimensiones[1, 0] = dimensiones[1, 0] - OffsetY;
+                proporcion = myLmap.GetPROPORCION(height / Proporcion, width / Proporcion);
             }
             else
             {
@@ -476,9 +479,9 @@ namespace ED_SMR_MLAT_Performance
             double proporcion;
             if (zoom)
             {
-                dimensiones[0, 0] = dimensiones[0, 0] - 10000;
-                dimensiones[1, 0] = dimensiones[1, 0] - 7000;
-                proporcion = myLmap.GetPROPORCION(height / 5, width / 5);
+                dimensiones[0, 0] = dimensiones[0, 0] - OffsetX;
+                dimensiones[1, 0] = dimensiones[1, 0] - OffsetY;
+                proporcion = myLmap.GetPROPORCION(height / Proporcion, width / Proporcion);
             }
             else
             {
@@ -614,9 +617,9 @@ namespace ED_SMR_MLAT_Performance
             double proporcion;
             if (zoom)
             {
-                dimensiones[0, 0] = dimensiones[0, 0] - 10000;
-                dimensiones[1, 0] = dimensiones[1, 0] - 7000;
-                proporcion = myLmap.GetPROPORCION(this.panelMap.Height / 5, this.panelMap.Width / 5);
+                dimensiones[0, 0] = dimensiones[0, 0] - OffsetX;
+                dimensiones[1, 0] = dimensiones[1, 0] - OffsetY;
+                proporcion = myLmap.GetPROPORCION(this.panelMap.Height / Proporcion, this.panelMap.Width / Proporcion);
             }
             else
             {
@@ -640,9 +643,9 @@ namespace ED_SMR_MLAT_Performance
             double proporcion;
             if (zoom)
             {
-                dimensiones[0, 0] = dimensiones[0, 0] - 10000;
-                dimensiones[1, 0] = dimensiones[1, 0] - 7000;
-                proporcion = myLmap.GetPROPORCION(this.panelMap.Height / 5, this.panelMap.Width / 5);
+                dimensiones[0, 0] = dimensiones[0, 0] - OffsetX;
+                dimensiones[1, 0] = dimensiones[1, 0] - OffsetY;
+                proporcion = myLmap.GetPROPORCION(this.panelMap.Height / Proporcion, this.panelMap.Width / Proporcion);
             }
             else
             {
