@@ -441,14 +441,13 @@ namespace Codigo
                     double diferenciaTiempoGanador;
                     int indiceGanador;
                     bool encontrado;
-                    int m = 1;//Esta fuera del for para que no se reinicie para cada punto
+                    int m = 0;//Esta fuera del for para que no se reinicie para cada punto
                     int guardarIndice;//Si un punto no se encuentra, el siguiente empieza a analizar desde guardarIndice
                     for (int n = indiceInicialMLAT; n <= indiceFinalMLAT; n++)
                     {
                         diferenciaTiempoGanador = Math.Pow(10, 8);
                         indiceGanador = -1;
                         encontrado = false;
-                        m = m - 1;
                         guardarIndice = m;
                         while ((m < myList.Count()) && (!encontrado))
                         {
@@ -467,6 +466,7 @@ namespace Codigo
                                 {
                                     encontrado = true;//Si ya ha encontrado un punto ganador, paramos de analizar. En el siguiente punto seguimos desde este indice
                                     //Si no se hace asi, el tiempo de procesado augmenta considerablemente
+                                    m=m-1;
                                 }
                             }
 
