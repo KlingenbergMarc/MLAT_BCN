@@ -269,7 +269,7 @@ namespace Codigo
 
         public void SetPositionAccuracy()
         {
-            PosAcc = new double[12, 7];
+            PosAcc = new double[15, 7];
             List<double[]> diferencia = new List<double[]>(2);//posición 1= diferencia; posicion 2=zona
 
             for (int i = 0; i < diferencias.Count(); i++)
@@ -277,7 +277,11 @@ namespace Codigo
                 double[] diferenciaActual = new double[2]; //[0]=Sqrt((X1-X2)^2+(Y1-Y2)^2); [1]=Zona
                 diferenciaActual[0] = Math.Sqrt(Math.Pow(diferencias[i][0], 2) + Math.Pow(diferencias[i][1], 2));
                 diferenciaActual[1] = diferencias[i][2];
-                diferencia.Add(diferenciaActual);
+                if(diferenciaActual[0] < 1000)//[m]
+                {
+                    //En algun caso aislado, se emparejan puntos muy lejanos (varios km). Se eliminan del analisis
+                    diferencia.Add(diferenciaActual);
+                }
             }
     
             List<int> zonas = new List<int>();
@@ -306,7 +310,7 @@ namespace Codigo
             SetPosAccValues(2, diferencia, zonas);
             zonas.Clear();
 
-            zonas.Add(13);
+            zonas.Add(13); //13
             SetPosAccValues(3, diferencia, zonas);
             zonas.Clear();
 
@@ -337,6 +341,23 @@ namespace Codigo
             zonas.Add(22); //22
             SetPosAccValues(10, diferencia, zonas);
             zonas.Clear();
+
+            zonas.Add(01); zonas.Add(02); zonas.Add(0); //Total Airborne
+            SetPosAccValues(11, diferencia, zonas);
+            zonas.Clear();
+
+            zonas.Add(01); //T4
+            SetPosAccValues(12, diferencia, zonas);
+            zonas.Clear();
+
+            zonas.Add(02); //T5
+            SetPosAccValues(13, diferencia, zonas);
+            zonas.Clear();
+
+            zonas.Add(0); //Resto
+            SetPosAccValues(14, diferencia, zonas);
+            zonas.Clear();
+
 
             //Max Value Detected
             double promedioTemporal = 0;
@@ -397,6 +418,21 @@ namespace Codigo
                         if (promedioTemporal > PosAcc[10, 2])
                             PosAcc[10, 2] = promedioTemporal;
                     }
+                    else if (zonaActual == 01)
+                    {
+                        if (promedioTemporal > PosAcc[10, 2])
+                            PosAcc[12, 2] = promedioTemporal;
+                    }
+                    else if (zonaActual == 02)
+                    {
+                        if (promedioTemporal > PosAcc[10, 2])
+                            PosAcc[13, 2] = promedioTemporal;
+                    }
+                    else if (zonaActual == 0)
+                    {
+                        if (promedioTemporal > PosAcc[10, 2])
+                            PosAcc[14, 2] = promedioTemporal;
+                    }
 
                     promedioTemporal = 0;
                     recuento = 1;
@@ -430,15 +466,27 @@ namespace Codigo
             }
             else PosAcc[8, 2] = PosAcc[9, 2];
 
+            promedioSeccion = PosAcc[12, 2];//Promedio Seccion Airborne
+            for (int i = 13; i <= 14; i++)
+            {
+                if (PosAcc[i, 2] > promedioSeccion)
+                {
+                    promedioSeccion = PosAcc[i, 2];
+                }
+            }
+            PosAcc[11, 2] = promedioSeccion;
+
             PosAcc[0, 3] = 7.5; //Max Maneouvering P95
             PosAcc[0, 4] = 12; //Max Maneouvering P99
             PosAcc[5, 3] = 7.5; //Max Apron P95
             PosAcc[5, 4] = 12; //Max Apron P99
+            PosAcc[12, 3] = 20; //Max Type 4 P95
+            PosAcc[13, 3] = 40; //Max Type 5 P95
         }
 
         public void SetProbOfMLATDetection()
         {
-            MLATDet = new double[11, 4];
+            MLATDet = new double[14, 4];
 
             //Detecciones reales & Expected
             bool tiempoSinSeñalSuperado = false; //Si tiempo actual es más grande que el anterior +1min
@@ -457,84 +505,101 @@ namespace Codigo
                     if ((myList.GetPlanI(aircraftDetected[i][n]).GetZona() != zonaActual) || (n == aircraftDetected[i].Count() - 1) || (tiempoSinSeñalSuperado))
                     {
                         tiempoSinSeñalSuperado = false;
-                        if ((zonaActual == 11) || (zonaActual == 12) || (zonaActual == 13) || (zonaActual == 4) || (zonaActual == 21) || (zonaActual == 22) || (zonaActual == 31)|| (zonaActual == 32))
+
+                        int indiceFinal;
+                        if (n != aircraftDetected[i].Count() - 1)
+                            indiceFinal = n - 1;
+                        else indiceFinal = n;
+
+                        double ventanaTiempo = 2;//En segundos
+                        if ((zonaActual == 21) || (zonaActual == 22))
                         {
-                            int indiceFinal;
-                            if (n != aircraftDetected[i].Count() - 1)
-                                indiceFinal = n - 1;
-                            else indiceFinal = n;
-
-                            double ventanaTiempo = 2;//En segundos
-                            if ((zonaActual == 21) || (zonaActual == 22))
-                            {
-                                ventanaTiempo = 5;
-                            }
-
-                            double tiempoFinal = myList.GetPlanI(aircraftDetected[i][indiceFinal]).GetUTCcorregido() * 60;
-                            double tiempoFinalVentana = tiempoInicial + ventanaTiempo;
-                            int ventanas = 0;
-                            int ventanasDetectadas = 0;
-
-                            while (tiempoFinalVentana <= tiempoFinal)
-                            {
-                                bool ventanaCumple = false;
-                                int m = indiceInicial;
-                                while ((m <= indiceFinal) && (!ventanaCumple))
-                                {
-                                    if (myList.GetPlanI(aircraftDetected[i][m]).GetUTCcorregido() * 60 >= tiempoInicial && myList.GetPlanI(aircraftDetected[i][m]).GetUTCcorregido() * 60 <= tiempoFinalVentana)
-                                    {
-                                        ventanaCumple = true;
-                                        ventanasDetectadas++;
-                                    }
-                                    m++;
-                                }
-                                ventanas++;
-                                tiempoInicial = tiempoInicial + 1;
-                                tiempoFinalVentana = tiempoInicial + ventanaTiempo;
-                            }
-
-                            if (zonaActual == 11)
-                            {
-                                MLATDet[1, 0] = MLATDet[1, 0] + ventanasDetectadas;
-                                MLATDet[1, 1] = MLATDet[1, 1] + ventanas;
-                            }
-                            else if (zonaActual == 12)
-                            {
-                                MLATDet[2, 0] = MLATDet[2, 0] + ventanasDetectadas;
-                                MLATDet[2, 1] = MLATDet[2, 1] + ventanas;
-                            }
-                            else if (zonaActual == 13)
-                            {
-                                MLATDet[3, 0] = MLATDet[3, 0] + ventanasDetectadas;
-                                MLATDet[3, 1] = MLATDet[3, 1] + ventanas;
-                            }
-                            else if (zonaActual == 4)
-                            {
-                                MLATDet[4, 0] = MLATDet[4, 0] + ventanasDetectadas;
-                                MLATDet[4, 1] = MLATDet[4, 1] + ventanas;
-                            }
-                            else if (zonaActual == 31)
-                            {
-                                MLATDet[5, 0] = MLATDet[5, 0] + ventanasDetectadas;
-                                MLATDet[5, 1] = MLATDet[5, 1] + ventanas;
-                            }
-                            else if (zonaActual == 32)
-                            {
-                                MLATDet[6, 0] = MLATDet[6, 0] + ventanasDetectadas;
-                                MLATDet[6, 1] = MLATDet[6, 1] + ventanas;
-                            }
-                            else if (zonaActual == 21)
-                            {
-                                MLATDet[8, 0] = MLATDet[8, 0] + ventanasDetectadas;
-                                MLATDet[8, 1] = MLATDet[8, 1] + ventanas;
-                            }
-                            else if (zonaActual == 22)
-                            {
-                                MLATDet[9, 0] = MLATDet[9, 0] + ventanasDetectadas;
-                                MLATDet[9, 1] = MLATDet[9, 1] + ventanas;
-                            }
-                            //Airborne not required
+                            ventanaTiempo = 5;
                         }
+                        else if ((zonaActual == 01) || (zonaActual == 02) || (zonaActual == 0))
+                        {
+                            ventanaTiempo = 1;
+                        }
+
+                        double tiempoFinal = myList.GetPlanI(aircraftDetected[i][indiceFinal]).GetUTCcorregido() * 60;
+                        double tiempoFinalVentana = tiempoInicial + ventanaTiempo;
+                        int ventanas = 0;
+                        int ventanasDetectadas = 0;
+
+                        while (tiempoFinalVentana <= tiempoFinal)
+                        {
+                            bool ventanaCumple = false;
+                            int m = indiceInicial;
+                            while ((m <= indiceFinal) && (!ventanaCumple))
+                            {
+                                if (myList.GetPlanI(aircraftDetected[i][m]).GetUTCcorregido() * 60 >= tiempoInicial && myList.GetPlanI(aircraftDetected[i][m]).GetUTCcorregido() * 60 <= tiempoFinalVentana)
+                                {
+                                    ventanaCumple = true;
+                                    ventanasDetectadas++;
+                                }
+                                m++;
+                            }
+                            ventanas++;
+                            tiempoInicial = tiempoInicial + 1;
+                            tiempoFinalVentana = tiempoInicial + ventanaTiempo;
+                        }
+
+                        if (zonaActual == 11)
+                        {
+                            MLATDet[1, 0] = MLATDet[1, 0] + ventanasDetectadas;
+                            MLATDet[1, 1] = MLATDet[1, 1] + ventanas;
+                        }
+                        else if (zonaActual == 12)
+                        {
+                            MLATDet[2, 0] = MLATDet[2, 0] + ventanasDetectadas;
+                            MLATDet[2, 1] = MLATDet[2, 1] + ventanas;
+                        }
+                        else if (zonaActual == 13)
+                        {
+                            MLATDet[3, 0] = MLATDet[3, 0] + ventanasDetectadas;
+                            MLATDet[3, 1] = MLATDet[3, 1] + ventanas;
+                        }
+                        else if (zonaActual == 4)
+                        {
+                            MLATDet[4, 0] = MLATDet[4, 0] + ventanasDetectadas;
+                            MLATDet[4, 1] = MLATDet[4, 1] + ventanas;
+                        }
+                        else if (zonaActual == 31)
+                        {
+                            MLATDet[5, 0] = MLATDet[5, 0] + ventanasDetectadas;
+                            MLATDet[5, 1] = MLATDet[5, 1] + ventanas;
+                        }
+                        else if (zonaActual == 32)
+                        {
+                            MLATDet[6, 0] = MLATDet[6, 0] + ventanasDetectadas;
+                            MLATDet[6, 1] = MLATDet[6, 1] + ventanas;
+                        }
+                        else if (zonaActual == 21)
+                        {
+                            MLATDet[8, 0] = MLATDet[8, 0] + ventanasDetectadas;
+                            MLATDet[8, 1] = MLATDet[8, 1] + ventanas;
+                        }
+                        else if (zonaActual == 22)
+                        {
+                            MLATDet[9, 0] = MLATDet[9, 0] + ventanasDetectadas;
+                            MLATDet[9, 1] = MLATDet[9, 1] + ventanas;
+                        }
+                        else if (zonaActual == 01)
+                        {
+                            MLATDet[11, 0] = MLATDet[11, 0] + ventanasDetectadas;
+                            MLATDet[11, 1] = MLATDet[11, 1] + ventanas;
+                        }
+                        else if (zonaActual == 02)
+                        {
+                            MLATDet[12, 0] = MLATDet[12, 0] + ventanasDetectadas;
+                            MLATDet[12, 1] = MLATDet[12, 1] + ventanas;
+                        }
+                        else if (zonaActual == 0)
+                        {
+                            MLATDet[13, 0] = MLATDet[13, 0] + ventanasDetectadas;
+                            MLATDet[13, 1] = MLATDet[13, 1] + ventanas;
+                        }
+
                         zonaActual = myList.GetPlanI(aircraftDetected[i][n]).GetZona();
                         indiceInicial = n;
                         tiempoInicial = myList.GetPlanI(aircraftDetected[i][n]).GetUTCcorregido() * 60;
@@ -547,6 +612,7 @@ namespace Codigo
             {
                 MLATDet[0, i] = MLATDet[1, i] + MLATDet[2, i] + MLATDet[3, i] + MLATDet[4, i] + MLATDet[5, i] + MLATDet[6, i]; //Total maneouvering + Apron
                 MLATDet[7, i] = MLATDet[8, i] + MLATDet[9, i]; //Total Stand
+                MLATDet[10, i] = MLATDet[11, i] + MLATDet[12, i] + MLATDet[13, i]; //Total Airborne
             }
 
             //Prob. of detection

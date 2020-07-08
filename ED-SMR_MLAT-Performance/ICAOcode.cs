@@ -64,7 +64,8 @@ namespace ED_SMR_MLAT_Performance
 
         private void ICAOcode_Load(object sender, EventArgs e)
         {
-            textBoxIcao.Text = "344399"; //ICAO Address que se suele usar
+            //textBoxIcao.Text = "344399"; //ICAO Address que se suele usar
+            textBoxIcao.Text = "34304F"; //ICAO Address que se suele usar
             textBoxIcao.SelectAll();
             Icao = " ";
         }

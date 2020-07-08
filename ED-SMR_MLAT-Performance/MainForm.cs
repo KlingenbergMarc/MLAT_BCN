@@ -41,9 +41,9 @@ namespace ED_SMR_MLAT_Performance
         double proporcionDescartados; //Cambia la proporcion del mapa de descartados en caso de que clique "View Whole"
         //bool seccionInicializada = true; //Regula el evento clic sobre panelMap, inicia y finaliza la creación de una sección
         //List<double[]> puntosSecciones = new List<double[]>();
-        double Proporcion = 5; //Proporcion del mapa que se enseña
-        double OffsetX = 10000; //Offset del origen de coordenadas del mapa (es igual al origen de coordenadas de la MLAT)
-        double OffsetY = 7000;
+        double Proporcion = 15; //Proporcion del mapa que se enseña
+        double OffsetX = 40000; //Offset del origen de coordenadas del mapa (es igual al origen de coordenadas de la MLAT)
+        double OffsetY = 21000;
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -979,7 +979,10 @@ namespace ED_SMR_MLAT_Performance
             grid.Rows[8].HeaderCell.Value = "Stands";
             grid.Rows[9].HeaderCell.Value = "Stands T1";
             grid.Rows[10].HeaderCell.Value = "Stands T2";
-            grid.Rows[11].HeaderCell.Value = "Airborne (No Data)";
+            grid.Rows[11].HeaderCell.Value = "Airborne";
+            grid.Rows[12].HeaderCell.Value = "Type 4";
+            grid.Rows[13].HeaderCell.Value = "Type 5";
+            grid.Rows[14].HeaderCell.Value = "Rest";
             grid.Rows[1].HeaderCell.Style.Padding = paddingZonasPrincipales;
             grid.Rows[2].HeaderCell.Style.Padding = paddingZonasPrincipales;
             grid.Rows[3].HeaderCell.Style.Padding = paddingZonasPrincipales;
@@ -988,6 +991,9 @@ namespace ED_SMR_MLAT_Performance
             grid.Rows[7].HeaderCell.Style.Padding = paddingZonasPrincipales;
             grid.Rows[9].HeaderCell.Style.Padding = paddingZonasPrincipales;
             grid.Rows[10].HeaderCell.Style.Padding = paddingZonasPrincipales;
+            grid.Rows[12].HeaderCell.Style.Padding = paddingZonasPrincipales;
+            grid.Rows[13].HeaderCell.Style.Padding = paddingZonasPrincipales;
+            grid.Rows[14].HeaderCell.Style.Padding = paddingZonasPrincipales;
             for (int i = 0; i < avaluador.GetPositionAccuracy().GetLength(0); i++)
             {
                 for (int j = 0; j < avaluador.GetPositionAccuracy().GetLength(1); j++)
@@ -1012,6 +1018,20 @@ namespace ED_SMR_MLAT_Performance
                             }
                         }
                     }
+                    else if ((i == 12) || (i == 13))
+                    {
+                        if (j == 0)
+                        {
+                            if (avaluador.GetPositionAccuracy()[i, j] != -1)
+                            {
+                                if (avaluador.GetPositionAccuracy()[i, j] <= avaluador.GetPositionAccuracy()[i, j + 3])
+                                {
+                                    grid[j, i].Style.BackColor = Color.Green;
+                                }
+                                else grid[j, i].Style.BackColor = Color.Red;
+                            }
+                        }
+                    }
                     else
                     {
                         if ((j == 3) || (j == 4))//Quitamos el 0 de la columna minimum value para las filas no principles
@@ -1019,6 +1039,8 @@ namespace ED_SMR_MLAT_Performance
                             grid[j, i].Value = null;
                         }
                     }
+                    grid[4, 12].Value = null;//Quitamos el 0 de la columna minimum value para P99 en Type 4 y 5
+                    grid[4, 13].Value = null;
 
                     if (i == 8)//Controla si el fondo es verde o rojo segun cumplan o no con el minimo
                     {
@@ -1075,7 +1097,10 @@ namespace ED_SMR_MLAT_Performance
             grid.Rows[7].HeaderCell.Value = "Stands";
             grid.Rows[8].HeaderCell.Value = "Stands T1";
             grid.Rows[9].HeaderCell.Value = "Stands T2";
-            grid.Rows[10].HeaderCell.Value = "Airborne (Not Required)";
+            grid.Rows[10].HeaderCell.Value = "Airborne";
+            grid.Rows[11].HeaderCell.Value = "Type 4";
+            grid.Rows[12].HeaderCell.Value = "Type 5";
+            grid.Rows[13].HeaderCell.Value = "Rest";
             grid.Rows[1].HeaderCell.Style.Padding = paddingZonasPrincipales;
             grid.Rows[2].HeaderCell.Style.Padding = paddingZonasPrincipales;
             grid.Rows[3].HeaderCell.Style.Padding = paddingZonasPrincipales;
@@ -1084,6 +1109,9 @@ namespace ED_SMR_MLAT_Performance
             grid.Rows[6].HeaderCell.Style.Padding = paddingZonasPrincipales;
             grid.Rows[8].HeaderCell.Style.Padding = paddingZonasPrincipales;
             grid.Rows[9].HeaderCell.Style.Padding = paddingZonasPrincipales;
+            grid.Rows[11].HeaderCell.Style.Padding = paddingZonasPrincipales;
+            grid.Rows[12].HeaderCell.Style.Padding = paddingZonasPrincipales;
+            grid.Rows[13].HeaderCell.Style.Padding = paddingZonasPrincipales;
             for (int i = 0; i < avaluador.GetProbOfMLATDetection().GetLength(0); i++)
             {
                 for (int j = 0; j < avaluador.GetProbOfMLATDetection().GetLength(1); j++)
@@ -1123,9 +1151,9 @@ namespace ED_SMR_MLAT_Performance
                         grid[j, i].Value = null;
                     }
 
-                    if (i == 10) //Quitamos el 0 de Apron y Airborne
+                    if (i == 10) //Negrita en Airborne
                     {
-                        grid[j, i].Value = null;
+                        grid[j, i].Style.Font = fuentePrincipal;
                     }
                 }
             }
@@ -1853,6 +1881,36 @@ namespace ED_SMR_MLAT_Performance
                                 style.Fill.SetPattern(DocumentFormat.OpenXml.Spreadsheet.PatternValues.Solid, Color.Red, Color.Transparent);
                             }
                             myExcel.SetCellStyle(i, 4, style);
+                        }
+                    }
+                    else if (i == 12 + posInicial)
+                    {
+                        if (myExcel.GetCellValueAsString(i, 2) != "")
+                        {
+                            if (myExcel.GetCellValueAsDouble(i, 2) <= myExcel.GetCellValueAsDouble(i, 6))
+                            {
+                                style.Fill.SetPattern(DocumentFormat.OpenXml.Spreadsheet.PatternValues.Solid, Color.Green, Color.Transparent);
+                            }
+                            else
+                            {
+                                style.Fill.SetPattern(DocumentFormat.OpenXml.Spreadsheet.PatternValues.Solid, Color.Red, Color.Transparent);
+                            }
+                            myExcel.SetCellStyle(i, 2, style);
+                        }
+                    }
+                    else if (i == 13 + posInicial)
+                    {
+                        if (myExcel.GetCellValueAsString(i, 2) != "")
+                        {
+                            if (myExcel.GetCellValueAsDouble(i, 2) <= myExcel.GetCellValueAsDouble(i, 6))
+                            {
+                                style.Fill.SetPattern(DocumentFormat.OpenXml.Spreadsheet.PatternValues.Solid, Color.Green, Color.Transparent);
+                            }
+                            else
+                            {
+                                style.Fill.SetPattern(DocumentFormat.OpenXml.Spreadsheet.PatternValues.Solid, Color.Red, Color.Transparent);
+                            }
+                            myExcel.SetCellStyle(i, 2, style);
                         }
                     }
                 }
